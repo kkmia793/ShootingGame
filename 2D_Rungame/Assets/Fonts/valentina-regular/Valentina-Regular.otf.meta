@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: fed6a11904e455f459ccd2eb7ca7f4c3
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Valentina
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 85c4604e9e728b5438deb52cbb6df7a5, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
