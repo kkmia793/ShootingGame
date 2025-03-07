@@ -1,0 +1,256 @@
+﻿@startuml
+
+' Enum とインターフェース定義
+package "Interfaces" {
+    interface IItem {
+        +ApplyEffect(ICharacter character)
+    }
+
+    interface ICharacter {
+        +Move(Vector2 direction)
+        +Attack()
+        +TakeDamage(int amount)
+        +SetMP(int amount)
+        +SetProjectileType(string type)
+        +SetInfiniteMP(bool enabled)
+        +RecoverMP(float amount)
+    }
+
+    interface IProjectile {
+        +Launch(Vector2 direction)
+        +HandleCollision(IProjectile otherProjectile)
+        +SetDamage(int amount)
+        +SetHP(int amount)
+        +TakeDamage(int amount)
+    }
+}
+
+' ScriptableObject データ
+package "ScriptableObjectData" {
+    class ScriptableObject
+    
+    class CharacterData {
+        +string characterId
+        +Sprite characterSprite
+        +int maxHealth
+        +float movementSpeed
+        +string defaultProjectileType
+    }
+
+    class ItemData {
+        +string itemId
+        +string effectType
+        +int effectValue
+        +Sprite itemSprite
+    }
+    
+    ScriptableObject <|-- CharacterData
+    ScriptableObject <|-- ItemData
+}
+
+' マネージャークラス
+package "Managers" {
+    class GameManager {
+        +StartGame()
+        +EndGame()
+        +InitializeGame()
+        +ResetGame()
+        +HandleGameOver()
+        +SetGameMode(GameMode mode)
+        +SetCharacterData(CharacterData characterData)
+        +SpawnCharacter()
+    }
+
+    class UIManager {
+        +ShowScreen(string screenName)
+        +UpdateHPBar(int health)
+        +UpdateMPBar(int mp, bool isLocked)
+    }
+
+    class SceneController {
+        +LoadScene(string sceneName)
+        +ReloadCurrentScene()
+    }
+
+    class NetworkManager {
+        +ConnectToServer()
+        +StartMatching()
+        +HandleRoomCreation()
+        +HandleRoomJoining()
+    }
+}
+
+' プレイヤー (MVP構造) 
+package "Player (MVP)" {
+    class PlayerModel implements ICharacter {
+        -int health
+        -int mp
+        -int maxMP
+        -Vector2 position
+        -string projectileType
+        -bool infiniteMP
+        +TakeDamage(int amount)
+        +RecoverMP(float amount)
+        +SetProjectileType(string type)
+        +SetInfiniteMP(bool enabled)
+    }
+
+    class PlayerView {
+        +UpdatePosition(Vector2 position)
+        +PlayAnimation(string animationName)
+        +SetAppearance(Sprite characterSprite)
+    }
+
+    class PlayerPresenter {
+        +HandleInput()
+        +UpdateView()
+        +ApplyItemEffect(IItem item)
+        +OnPlayerDeath()
+        +SetCharacterData(CharacterData characterData)
+    }
+}
+
+' 敵 (MVP構造) 
+package "Enemy (MVP)" {
+    class EnemyModel implements ICharacter {
+        -int health
+        -int mp
+        -Vector2 position
+        -string projectileType
+        +TakeDamage(int amount)
+        +RecoverMP(float amount)
+        +SetProjectileType(string type)
+    }
+
+    class EnemyView {
+        +UpdatePosition(Vector2 position)
+        +PlayAnimation(string animationName)
+        +SetAppearance(Sprite characterSprite)
+    }
+
+    class EnemyPresenter {
+        +ControlAI()
+        +UpdateView()
+        +ApplyItemEffect(IItem item)
+        +OnEnemyDeath()
+        +SetCharacterData(CharacterData characterData)
+    }
+}
+
+' 弾丸 (MVP構造) 
+package "Projectile (MVP)" {
+    class ProjectileModel implements IProjectile {
+        -int damage
+        -int hp
+        -bool canReflect
+        +SetDamage(int amount)
+        +SetHP(int amount)
+        +TakeDamage(int amount)
+    }
+
+    class ProjectileView {
+        +UpdatePosition(Vector2 position)
+    }
+
+    class ProjectilePresenter {
+        +Launch(Vector2 direction)
+        +HandleCollision(IProjectile otherProjectile)
+    }
+}
+
+' アイテム (MVP構造) 
+package "Item (MVP)" {
+    class ItemModel implements IItem {
+        -ItemData itemData
+        +ApplyEffect(ICharacter character)
+    }
+
+    class ItemView {
+        +DisplayItem()
+        +PlayPickupEffect()
+        +SetAppearance(Sprite itemSprite)
+    }
+
+    class ItemPresenter {
+        +HandlePickup()
+        +ApplyEffect(ICharacter character)
+        +SetItemData(ItemData itemData)
+    }
+}
+
+' キャラクター選択
+package "Character Selection" {
+    class CharacterSelectionModel {
+        -CharacterData[] availableCharacters
+    }
+
+    class CharacterSelectionView {
+        +DisplayCharacters(bool isOfflineMode)
+    }
+
+    class CharacterSelectionPresenter {
+        +SelectCharacter(CharacterData characterData)
+        +SetSelectionMode(bool isOfflineMode)
+        +GetSelectedCharacterData() : CharacterData
+    }
+}
+
+' モード選択
+package "Mode Selection" {
+    class ModeSelectionModel {
+        -GameMode[] availableModes
+    }
+
+    class ModeSelectionView {
+        +DisplayModeOptions()
+    }
+
+    class ModeSelectionPresenter {
+        +SelectMode(GameMode mode)
+    }
+
+    enum GameMode {
+        OfflineMode
+        OnlineRoomMode
+        OnlineMatchingMode
+    }
+}
+
+' 関連性と依存関係
+GameManager --> UIManager
+GameManager --> NetworkManager
+GameManager --> SceneController
+
+PlayerModel <--> PlayerPresenter
+PlayerView <--> PlayerPresenter
+
+EnemyModel <--> EnemyPresenter
+EnemyView <--> EnemyPresenter
+
+ProjectileModel <--> ProjectilePresenter
+ProjectileView <--> ProjectilePresenter
+
+ItemModel <--> ItemPresenter
+ItemView <--> ItemPresenter
+
+CharacterSelectionModel <--> CharacterSelectionPresenter
+CharacterSelectionView <--> CharacterSelectionPresenter
+
+ModeSelectionModel <--> ModeSelectionPresenter
+ModeSelectionPresenter --> GameMode
+ModeSelectionView <--> ModeSelectionPresenter
+
+UIManager --> ModeSelectionPresenter
+UIManager --> CharacterSelectionPresenter
+
+PlayerPresenter --> GameManager : OnPlayerDeath()
+EnemyPresenter --> GameManager : OnEnemyDeath()
+GameManager --> UIManager : ShowScreen("GameOver")
+
+ModeSelectionPresenter --> GameManager : SelectMode()
+GameManager --> CharacterSelectionPresenter : SetSelectionMode()
+GameManager --> PlayerPresenter : SetCharacterData()
+GameManager --> EnemyPresenter : SetCharacterData()
+ItemPresenter --> ItemModel : SetItemData()
+
+@enduml
