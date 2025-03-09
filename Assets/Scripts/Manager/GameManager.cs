@@ -1,9 +1,14 @@
+using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     public GameMode CurrentGameMode { get; private set; }
+    
+    public event Action<CharacterData> On1PCharacterDataReady;
+    public event Action<CharacterData> On2PCharacterDataReady;
     
     private CharacterData _selected1PCharacter;
     private CharacterData _selected2PCharacter;
@@ -19,6 +24,16 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     public void SetGameMode(GameMode mode)
@@ -59,5 +74,20 @@ public class GameManager : MonoBehaviour
     public bool IsCharacterAlreadySelected(CharacterData characterData)
     {
         return _selected1PCharacter == characterData || _selected2PCharacter == characterData;
+    }
+
+    private void InitializeGame()
+    {
+        On1PCharacterDataReady?.Invoke(_selected1PCharacter);
+        On2PCharacterDataReady?.Invoke(_selected2PCharacter);
+        Debug.Log("a");
+    }
+    
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Main")
+        {
+            InitializeGame();
+        }
     }
 }
