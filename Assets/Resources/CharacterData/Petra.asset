@@ -16,5 +16,5 @@ MonoBehaviour:
   characterName: Petra
   maxHealth: 100
   jumpPower: 0
-  characterSprite: {fileID: 0}
+  characterSprite: {fileID: -992926607779963493, guid: d8465ce8376435247a9d875f08f1bb69, type: 3}
   characterPrefab: {fileID: 2801922785595388684, guid: fdefb7e42bdb6d647bb91b5e0eab60ed, type: 3}

@@ -16,5 +16,5 @@ MonoBehaviour:
   characterName: Syaru
   maxHealth: 100
   jumpPower: 0
-  characterSprite: {fileID: 0}
+  characterSprite: {fileID: -4036627087293254254, guid: 61207bdf6b5e4994692d975983498598, type: 3}
   characterPrefab: {fileID: 2510916713267941176, guid: cec20db22cb646a409216312183a3407, type: 3}

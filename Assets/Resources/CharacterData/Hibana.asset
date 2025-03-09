@@ -16,5 +16,5 @@ MonoBehaviour:
   characterName: Hibana
   maxHealth: 100
   jumpPower: 0
-  characterSprite: {fileID: 0}
+  characterSprite: {fileID: -7108717441781855010, guid: 16213f78bf8e24e4d9ca21f817964944, type: 3}
   characterPrefab: {fileID: 2978029902767339094, guid: ae6d4eb5540dd924a87b080e6d4d6df8, type: 3}

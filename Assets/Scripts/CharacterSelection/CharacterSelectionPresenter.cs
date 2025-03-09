@@ -43,18 +43,19 @@ public class CharacterSelectionPresenter : MonoBehaviour
 
     private void OnBackButtonClicked()
     {
-        CharacterData selectedCharacter = model.GetSelectedCharacter();
+        CharacterData selectedCharacter = GameManager.Instance.GetSelected1PCharacter();
         
         if (!_isSelectingEnemy)
         {
             SceneController.Instance.LoadScene("ModeSelection");
         }
-        else
-        {
-            Debug.Log("自キャラクター選択フェーズに移行");
-            view.HighlightSelectedCharacter(selectedCharacter.characterId);
-            _isSelectingEnemy = false;
-        }
+        
+        if (selectedCharacter == null) return;
+
+        Debug.Log(selectedCharacter.characterId);
+        Debug.Log("自キャラクター選択フェーズに移行");
+        _isSelectingEnemy = false;
+        view.HighlightSelectedCharacter(selectedCharacter.characterId);
     }
 
     private void OnNextButtonClicked()
@@ -65,9 +66,9 @@ public class CharacterSelectionPresenter : MonoBehaviour
         {
             if (!_isSelectingEnemy)
             {
+                _isSelectingEnemy = true;
                 // まず自キャラを選択してから敵キャラ選択へ
                 GameManager.Instance.Set1PCharacterData(selectedCharacter);
-                _isSelectingEnemy = true;
                 
                 view.ResetCharacterSelection();
                 
