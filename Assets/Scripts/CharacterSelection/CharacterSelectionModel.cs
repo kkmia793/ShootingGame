@@ -16,7 +16,7 @@ public class CharacterSelectionModel
 
     public void SelectCharacter(CharacterData characterData)
     {
-        if (characterData != null && characterData != selectedCharacter)
+        if (characterData != null)
         {
             selectedCharacter = characterData;
             OnCharacterSelected?.Invoke(selectedCharacter);
