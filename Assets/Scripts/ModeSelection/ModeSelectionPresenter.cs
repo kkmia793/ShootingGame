@@ -8,15 +8,59 @@ public class ModeSelectionPresenter : MonoBehaviour
     private void Start()
     {
         model = new ModeSelectionModel();
-        
-        view.AddOfflineModeListener(() => OnModeSelected(GameMode.OfflineMode));
-        view.AddOnlineRoomModeListener(() => OnModeSelected(GameMode.OnlineRoomMode));
-        view.AddOnlineMatchingModeListener(() => OnModeSelected(GameMode.OnlineMatchingMode));
+
+        model.OnGameModeChanged += OnGameModeChanged;
+
+        view.OnOfflineModeSelected += () => model.SetMode(GameMode.OfflineMode);
+        view.OnOnlineRoomModeSelected += () => model.SetMode(GameMode.OnlineRoomMode);
+        view.OnOnlineMatchingModeSelected += () => model.SetMode(GameMode.OnlineMatchingMode);
+        view.OnBackButtonClicked += OnBackButtonClicked;
+        view.OnNextButtonClicked += OnNextButtonClicked;
+
+        OnGameModeChanged(GameMode.OfflineMode);
     }
 
-    private void OnModeSelected(GameMode mode)
+    private void OnGameModeChanged(GameMode mode)
     {
-        model.SetMode(mode);
         GameManager.Instance.SetGameMode(mode);
+        view.UpdateSelectedMode(mode);
+    }
+
+    private void OnBackButtonClicked()
+    {
+        SceneController.Instance.LoadScene("Title");
+    }
+
+    private void OnNextButtonClicked()
+    {
+        GameMode currentMode = model.SelectedMode;
+
+        switch (currentMode)
+        {
+            case GameMode.OfflineMode:
+                SceneController.Instance.LoadScene("CharacterSelection");
+                break;
+
+            case GameMode.OnlineRoomMode:
+                SceneController.Instance.LoadScene("RoomCreation");
+                break;
+
+            case GameMode.OnlineMatchingMode:
+                SceneController.Instance.LoadScene("CharacterSelection");
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        model.OnGameModeChanged -= OnGameModeChanged;
+        view.OnOfflineModeSelected -= () => model.SetMode(GameMode.OfflineMode);
+        view.OnOnlineRoomModeSelected -= () => model.SetMode(GameMode.OnlineRoomMode);
+        view.OnOnlineMatchingModeSelected -= () => model.SetMode(GameMode.OnlineMatchingMode);
+        view.OnBackButtonClicked -= OnBackButtonClicked;
+        view.OnNextButtonClicked -= OnNextButtonClicked;
     }
 }
