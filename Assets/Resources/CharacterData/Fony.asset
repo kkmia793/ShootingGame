@@ -16,5 +16,5 @@ MonoBehaviour:
   characterName: Fony
   maxHealth: 100
   jumpPower: 0
-  characterSprite: {fileID: 0}
+  characterSprite: {fileID: -7178650197084446380, guid: 0fed9df775cfb6146bb240f48ec9a1a7, type: 3}
   characterPrefab: {fileID: 3331487993487036235, guid: 87bdd5dbc1a441e43afd3c178dd3aab5, type: 3}
