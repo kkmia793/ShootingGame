@@ -1,3 +1,5 @@
+using System;
+
 public enum GameMode
 {
     OfflineMode,
@@ -7,10 +9,23 @@ public enum GameMode
 
 public class ModeSelectionModel
 {
-    public GameMode SelectedMode { get; private set; }
+    private GameMode selectedMode = GameMode.OfflineMode; 
+
+    public event Action<GameMode> OnGameModeChanged;
+
+    public GameMode SelectedMode => selectedMode;
+
+    public ModeSelectionModel()
+    {
+        OnGameModeChanged?.Invoke(selectedMode);
+    }
 
     public void SetMode(GameMode mode)
     {
-        SelectedMode = mode;
+        if (selectedMode != mode)
+        {
+            selectedMode = mode;
+            OnGameModeChanged?.Invoke(selectedMode);
+        }
     }
 }
